@@ -43,62 +43,61 @@ int main() {
     strcpy(currentPlayer, player1Name); // Player 1 starts
 
     fclose(spellsp);//close file, no longer needed
-// ... (previous code remains the same)
 
-char usedSpells[100][100]; // Array to store used spells
-int numofusedspells = 0; // Number of used spells
-
-while (1) {
-    printf("%s, choose a spell: ", currentPlayer);
-    scanf("%s", currentSpell);
-
-    // Check if the spell is valid
-    if (strlen(lastSpell) > 0 && !isValidSpell(currentSpell, lastSpell)) {
-        printf("Invalid spell! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
-        break;
-    }
-
-    // Check if the spell has already been used
-    int validSpell = 0;
-    int isRepetition = 0;
-
-    for (int i = 0; i < numofspells; i++) {
-        if (strcmp(spells[i], currentSpell) == 0) {
-            validSpell = 1;
-            strcpy(spells[i], ""); // Remove the spell from the list
+    char usedSpells[100][100]; // Array to store used spells
+    int numofusedspells = 0; // Number of used spells
+    
+    while (1) {
+        printf("%s, choose a spell: ", currentPlayer);
+        scanf("%s", currentSpell);
+    
+        // Check if the spell is valid
+        if (strlen(lastSpell) > 0 && !isValidSpell(currentSpell, lastSpell)) {
+            printf("Invalid spell! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
             break;
         }
-    }
-
-    for (int i = 0; i < numofusedspells; i++) {
-        if (strcmp(usedSpells[i], currentSpell) == 0) {
-            isRepetition = 1;
+    
+        // Check if the spell has already been used
+        int validSpell = 0;
+        int isRepetition = 0;
+    
+        for (int i = 0; i < numofspells; i++) {
+            if (strcmp(spells[i], currentSpell) == 0) {
+                validSpell = 1;
+                strcpy(spells[i], ""); // Remove the spell from the list
+                break;
+            }
+        }
+    
+        for (int i = 0; i < numofusedspells; i++) {
+            if (strcmp(usedSpells[i], currentSpell) == 0) {
+                isRepetition = 1;
+                break;
+            }
+        }
+    
+        if (!validSpell) {
+            if (isRepetition) {
+                printf("Repetition! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+            } else {
+                printf("Invalid input! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+            }
             break;
         }
-    }
-
-    if (!validSpell) {
-        if (isRepetition) {
-            printf("Repetition! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+    
+        // Add the current spell to used spells list
+        strcpy(usedSpells[numofusedspells], currentSpell);
+        numofusedspells++;
+    
+        strcpy(lastSpell, currentSpell);
+    
+        if (strcmp(currentPlayer, player1Name) == 0) {
+            strcpy(currentPlayer, player2Name);
         } else {
-            printf("Invalid input! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+            strcpy(currentPlayer, player1Name);
         }
-        break;
     }
-
-    // Add the current spell to used spells list
-    strcpy(usedSpells[numofusedspells], currentSpell);
-    numofusedspells++;
-
-    strcpy(lastSpell, currentSpell);
-
-    if (strcmp(currentPlayer, player1Name) == 0) {
-        strcpy(currentPlayer, player2Name);
-    } else {
-        strcpy(currentPlayer, player1Name);
-    }
-}
-
+    
 
 
     return 0;
