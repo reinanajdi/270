@@ -62,7 +62,7 @@ int main() {
 
         // Check if the spell is valid and not a repetition
         if (!validSpell) {
-            printf("Invalid spell! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+            printf(Repetition! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
             break;
         }
 
