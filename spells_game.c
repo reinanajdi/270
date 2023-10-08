@@ -2,11 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+// according to the rules 
 int isValidSpell(char* spell, char* lastSpell) {
     if (spell[0] != lastSpell[strlen(lastSpell) - 1]) {
         return 0; // Invalid spell
     }
-    return 1; //if valid
+    return 1; // Valid spell
 }
 
 int main() {
@@ -22,7 +23,6 @@ int main() {
 
     for (int i = 0; i < numofspells; i++) {
         fscanf(spellsp, "%s", spells[i]);
-        printf("%s\n", spells[i]);
     }
 
     char player1Name[20];
@@ -40,36 +40,31 @@ int main() {
 
     fclose(spellsp);
 
-    // turn taking impl
-    while (1) {
+    while (1) {//continuous loop 
         printf("%s, choose a spell: ", currentPlayer);
         scanf("%s", currentSpell);
 
-        // is the word valid
+        // Check if the spell is valid
         if (strlen(lastSpell) > 0 && !isValidSpell(currentSpell, lastSpell)) {
-            printf("Invalid spell! %s wins.\n", currentPlayer == player1Name ? player2Name : player1Name);
+            printf("Invalid spell! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
             break;
         }
 
-        // we check if spell is in the list of spells
+        // Check if the spell has already been used
         int validSpell = 0;
         for (int i = 0; i < numofspells; i++) {
             if (strcmp(spells[i], currentSpell) == 0) {
                 validSpell = 1;
-                strcpy(spells[i], ""); //we rmeove the spell form the list 
+                strcpy(spells[i], ""); // Remove the spell from the list 
                 break;
             }
         }
 
+        // Check if the spell is valid and not a repetition
         if (!validSpell) {
-    if (strcmp(currentPlayer, player1Name)) {
-        printf("%s chose an invalid spell! %s wins.\n", currentPlayer, player1Name);
-    } else {
-        printf("%s chose an invalid spell! %s wins.\n", currentPlayer, player2Name);
-    }
-    break;
-}
-
+            printf("Invalid spell! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+            break;
+        }
 
         // Set last spell
         strcpy(lastSpell, currentSpell);
@@ -84,4 +79,3 @@ int main() {
 
     return 0;
 }
-
