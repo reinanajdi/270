@@ -43,43 +43,63 @@ int main() {
     strcpy(currentPlayer, player1Name); // Player 1 starts
 
     fclose(spellsp);//close file, no longer needed
+// ... (previous code remains the same)
 
-    while (1) {//continuous loop 
-        printf("%s, choose a spell: ", currentPlayer);
-        scanf("%s", currentSpell);//scan chosen spell from current player
+char usedSpells[100][100]; // Array to store used spells
+int numofusedspells = 0; // Number of used spells
 
-        // Check if the spell is valid, if valid we dont enter the for loop
-        if (strlen(lastSpell) > 0 && !isValidSpell(currentSpell, lastSpell)) {
-            printf("Invalid spell! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
-            break;//exit the loop if spell is invalid
-        }
+while (1) {
+    printf("%s, choose a spell: ", currentPlayer);
+    scanf("%s", currentSpell);
 
-        // Check if the spell has already been used
-        int validSpell = 0;//initially assume it is not valid until proven otherwise
-        for (int i = 0; i < numofspells; i++) {//check if chosen spell is valid and present in the list of available spells
-            if (strcmp(spells[i], currentSpell) == 0) {
-                validSpell = 1;
-                strcpy(spells[i], ""); // Remove the spell from the list 
-                break;
-            }
-        }
+    // Check if the spell is valid
+    if (strlen(lastSpell) > 0 && !isValidSpell(currentSpell, lastSpell)) {
+        printf("Invalid spell! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+        break;
+    }
 
-        // Check if the spell is valid and not a repetition
-        if (!validSpell) {
-            printf("Repetition! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
-            break;//exit loop in case of repetition
-        }
+    // Check if the spell has already been used
+    int validSpell = 0;
+    int isRepetition = 0;
 
-        // Set last spell
-        strcpy(lastSpell, currentSpell);//strcpy() os used to copy strings. Here we update the last spell to the current one just used.
-
-        // Switch players
-        if (strcmp(currentPlayer, player1Name) == 0){//if currentPLayer == player1Name that means player 1 just casted a spell therefore entering the if condition to executing it.
-            strcpy(currentPlayer, player2Name);//update currentPlayer to player2Name hence switching turns
-        } else {//updates currentPlayer to player1Name, switching turns
-            strcpy(currentPlayer, player1Name);
+    for (int i = 0; i < numofspells; i++) {
+        if (strcmp(spells[i], currentSpell) == 0) {
+            validSpell = 1;
+            strcpy(spells[i], ""); // Remove the spell from the list
+            break;
         }
     }
+
+    for (int i = 0; i < numofusedspells; i++) {
+        if (strcmp(usedSpells[i], currentSpell) == 0) {
+            isRepetition = 1;
+            break;
+        }
+    }
+
+    if (!validSpell) {
+        if (isRepetition) {
+            printf("Repetition! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+        } else {
+            printf("Invalid input! %s wins.\n", strcmp(currentPlayer, player1Name) == 0 ? player2Name : player1Name);
+        }
+        break;
+    }
+
+    // Add the current spell to used spells list
+    strcpy(usedSpells[numofusedspells], currentSpell);
+    numofusedspells++;
+
+    strcpy(lastSpell, currentSpell);
+
+    if (strcmp(currentPlayer, player1Name) == 0) {
+        strcpy(currentPlayer, player2Name);
+    } else {
+        strcpy(currentPlayer, player1Name);
+    }
+}
+
+
 
     return 0;
 }
