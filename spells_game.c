@@ -33,7 +33,21 @@ int checkSpellValidity(char* spell, char* lastSpell, char spells[][100], int num
 }
 
 // Function for the bot player to choose a spell using a smarter strategy
-char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[100]) {
+char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[100], int difficulty) {
+
+     if (difficulty == 0) { // runs if player chose the easiest difficulty level, simply chooses the next available valid spell.
+            // Loop through each spell in the list
+        for (int i = 0; i < numofspells; i++) {
+            // Check if the spell is valid and can be used after the last spell
+            if (strlen(spells[i]) > 0 && isValidSpell(spells[i], lastSpell)) {
+                // Return the first valid spell found
+                return spells[i];
+            }
+        }
+        // If no valid spell is found, return an empty string
+        return "";
+    } 
+    
     char* bestSpell = NULL;
     int bestScore = 0;
 
@@ -50,6 +64,22 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
                 if (strcmp(spells[j], tempLastSpell) == 0) {
                     score++;
                 }
+            }
+
+            if (difficulty == 2) { /* runs if the player chooses hard difficulty
+                                      which allows the bot to adopt a more aggressive strategy
+                                    * it works by prioritizing spells whose last letters 
+                                      rarely occur as first letters, forcing the player to choose from
+                                      a smaller list of spells. */
+                
+                char lastLetter = spells[i][strlen(spells[i] - 1)]; 
+                int lastAsFirstCount = 0;
+                for (int k = 0; k < numofspells; k++) {
+                    if (lastLetter == spells[k][0]) {
+                        lastAsFirstCount++;
+                    } 
+                } score += numofspells - lastAsFirstCount;
+
             }
 
             // Update the best spell if the current spell has a higher score
@@ -87,6 +117,7 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
 }
 
 int main() {
+    int difficulty;
     char spells[100][100]; // Array to store spells
     int numofspells;       // Number of spells
     FILE* spellsp;          // File pointer to interact with the given file
@@ -109,7 +140,9 @@ int main() {
     char player1Name[20]; // Player 1 name (human player)
     char player2Name[20] = "Bot"; // Player 2 name (bot player)
     printf("Enter your name: ");
-    scanf("%s", player1Name); 
+    scanf("%s", player1Name);
+    printf("Enter the desired difficuly level (0 = Easy, 1 = Medium, 2 = Hard): ");
+    scanf("%d", difficulty); // Scanner to get the desired difficulty level
 
     char currentSpell[100]; // Current spell chosen
     char lastSpell[100] = ""; // Last spell casted; initialize as an empty string because at the beginning of the game, no spell has been cast yet
@@ -126,7 +159,7 @@ int main() {
             scanf("%s", currentSpell); // Scan the chosen spell from the player
         } else {
             // Bot's turn: Choose a spell
-            strcpy(currentSpell, chooseSmartBotSpell(spells, numofspells, lastSpell));
+            strcpy(currentSpell, chooseSmartBotSpell(spells, numofspells, lastSpell, difficulty));
             printf("Bot chooses: %s\n", currentSpell);
         }
 
