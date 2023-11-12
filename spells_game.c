@@ -3,7 +3,11 @@
 #include <stdlib.h>
 #include <time.h>
 
-// Function to check if the chosen spell is valid
+/* IsValidSpell checks if the chosen spell is valid according to the two parameters,
+    spell represents the string chosen and last spell is the string representing the last spell casted.
+    The function compares the first character of the current spell (spell[0]) to the last character of the last spell (lastSpell[strlen(lastSpell) - 1])
+    If they match (invalid spell), it returns 1 else it returns 0
+*/
 int isValidSpell(char* spell, char* lastSpell) {
     if (spell[0] != lastSpell[strlen(lastSpell) - 1]) {
         return 0; // Invalid spell
@@ -116,8 +120,7 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
     }
 }
 
-int main() {
-    int difficulty;
+int main() {   int difficulty;
     char spells[100][100]; // Array to store spells
     int numofspells;       // Number of spells
     FILE* spellsp;          // File pointer to interact with the given file
@@ -134,10 +137,10 @@ int main() {
 
     // Loop to read each spell from the file and store it in the array
     for (int i = 0; i < numofspells; i++) {
-        fscanf(spellsp, "%s", spells[i]);
+        fscanf(spellsp, "%s", spells[i]); // Read each spell from file and store in an array
     }
 
-    char player1Name[20]; // Player 1 name (human player)
+  char player1Name[20]; // Player 1 name (human player)
     char player2Name[20] = "Bot"; // Player 2 name (bot player)
     printf("Enter your name: ");
     scanf("%s", player1Name);
@@ -173,8 +176,7 @@ int main() {
                 break;
             }
         }
-
-        // Check if spell is invalid and exit loop
+    // Check if spell is invalid and exit loop
         if (!validSpell) {
             printf("Invalid spell! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
             break;
