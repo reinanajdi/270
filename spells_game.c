@@ -147,7 +147,10 @@ int main() {
     scanf("%s", player1Name);
     printf("Enter the desired difficuly level (0 = Easy, 1 = Medium, 2 = Hard): ");
     scanf("%d", &difficulty); // Scanner to get the desired difficulty level
-
+    while (difficulty != 0 && difficulty != 1 && difficulty != 2) {
+        printf("You must pick a number between 0, 1, and 2: ");
+        scanf("%d", &difficulty); 
+    }
     char currentSpell[100]; // Current spell chosen
     char lastSpell[100] = ""; // Last spell casted; initialize as an empty string because at the beginning of the game, no spell has been cast yet
 
