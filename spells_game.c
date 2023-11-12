@@ -76,13 +76,13 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
                                       rarely occur as first letters, forcing the player to choose from
                                       a smaller list of spells. */
                 
-                char lastLetter = spells[i][strlen(spells[i] - 1)]; 
+                char lastLetter = spells[i][strlen(spells[i]) - 1]; 
                 int lastAsFirstCount = 0;
                 for (int k = 0; k < numofspells; k++) {
                     if (lastLetter == spells[k][0]) {
                         lastAsFirstCount++;
                     } 
-                } score += numofspells - lastAsFirstCount;
+                } score -= lastAsFirstCount;
 
             }
 
