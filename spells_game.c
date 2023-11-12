@@ -3,11 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-/* IsValidSpell checks if the chosen spell is valid according to the two parameters,
-    spell represents the string chosen, and last spell is the string representing the last spell casted.
-    The function compares the first character of the current spell (spell[0]) to the last character of the last spell (lastSpell[strlen(lastSpell) - 1]).
-    If they match (invalid spell), it returns 0; otherwise, it returns 1.
-*/
+// Function to check if the chosen spell is valid
 int isValidSpell(char* spell, char* lastSpell) {
     if (spell[0] != lastSpell[strlen(lastSpell) - 1]) {
         return 0; // Invalid spell
@@ -15,24 +11,48 @@ int isValidSpell(char* spell, char* lastSpell) {
     return 1; // Valid spell
 }
 
+// Function to check if the chosen spell is a repetition
+int isRepetition(char* spell, char spells[][100], int numofspells) {
+    for (int i = 0; i < numofspells; i++) {
+        if (strcmp(spells[i], spell) == 0) {
+            return 1; // Repetition
+        }
+    }
+    return 0;
+}
+
+// Function to check the validity of the spell (Invalid, Repetition, or Valid)
+int checkSpellValidity(char* spell, char* lastSpell, char spells[][100], int numofspells) {
+    if (strlen(lastSpell) > 0 && !isValidSpell(spell, lastSpell)) {
+        return 0; // Invalid spell
+    } else if (isRepetition(spell, spells, numofspells)) {
+        return 1; // Repetition
+    } else {
+        return 2; // Valid spell
+    }
+}
+
 // Function for the bot player to choose a spell using a smarter strategy
 char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[100]) {
     char* bestSpell = NULL;
     int bestScore = 0;
 
+    // Loop through each spell to find the optimal spell for the bot
     for (int i = 0; i < numofspells; i++) {
-        if (strlen(spells[i]) > 0 && isValidSpell(spells[i], lastSpell)) {//to check if spells[i] is not empty and is valid 
+        if (strlen(spells[i]) > 0 && isValidSpell(spells[i], lastSpell)) {
             int score = 1;
             char tempLastSpell[100];
-            strcpy(tempLastSpell, lastSpell);//to copy the contents of lastspell to templastspell
-            strcat(tempLastSpell, spells[i]); // to apend the contents of spells[i] to templastspell
-            
+            strcpy(tempLastSpell, lastSpell);
+            strcat(tempLastSpell, spells[i]);
+
+            // Loop through each spell to calculate the score
             for (int j = 0; j < numofspells; j++) {
                 if (strcmp(spells[j], tempLastSpell) == 0) {
                     score++;
                 }
             }
 
+            // Update the best spell if the current spell has a higher score
             if (score > bestScore) {
                 bestScore = score;
                 bestSpell = spells[i];
@@ -40,18 +60,22 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
         }
     }
 
+    // If no optimal spell is found, choose randomly
     if (bestSpell != NULL) {
         return bestSpell;
     } else {
-        // If no optimal spell is found, choose randomly
         int validOptions[100];
         int numValidOptions = 0;
+
+        // Loop through each spell to find valid options for the bot's random choice
         for (int i = 0; i < numofspells; i++) {
             if (strlen(spells[i]) > 0 && isValidSpell(spells[i], lastSpell)) {
                 validOptions[numValidOptions++] = i;
             }
         }
+
         if (numValidOptions > 0) {
+            // Choose a random spell from the valid options
             int randomIndex = rand() % numValidOptions;
             return spells[validOptions[randomIndex]];
         } else {
@@ -64,50 +88,52 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
 
 int main() {
     char spells[100][100]; // Array to store spells
-    int numofspells; // Number of spells
-    FILE* spellsp; // Declare a file pointer to interact with the given file
+    int numofspells;       // Number of spells
+    FILE* spellsp;          // File pointer to interact with the given file
     spellsp = fopen("spells.txt", "r"); // Open the file containing spells
+
+    // Check if the file was opened successfully
     if (spellsp == NULL) {
         perror("File was not opened ");
         return 1; // Return 1 to indicate an error in opening the file
     }
-    fscanf(spellsp, "%d", &numofspells); // Read the number of spells from the file
 
+    // Read the number of spells from the file
+    fscanf(spellsp, "%d", &numofspells);
+
+    // Loop to read each spell from the file and store it in the array
     for (int i = 0; i < numofspells; i++) {
-        fscanf(spellsp, "%s", spells[i]); // Read each spell from the file and store it in an array
+        fscanf(spellsp, "%s", spells[i]);
     }
 
     char player1Name[20]; // Player 1 name (human player)
     char player2Name[20] = "Bot"; // Player 2 name (bot player)
     printf("Enter your name: ");
-    scanf("%s", player1Name); // Scanner to get the human player's name
+    scanf("%s", player1Name); 
 
-    char currentPlayer[20]; // Name of the current player
     char currentSpell[100]; // Current spell chosen
-    char lastSpell[100] = ""; // Last spell casted; initialize it as an empty string because at the beginning of the game no spell has been cast yet
+    char lastSpell[100] = ""; // Last spell casted; initialize as an empty string because at the beginning of the game, no spell has been cast yet
 
     srand(time(NULL)); // Seed the random number generator with the current time
 
     int isHumanPlayerTurn = 1; // 1 for human, 0 for bot; Initialize as human player's turn
 
-    while (1) { // Continuous loop
+    // Continuous loop for the game
+    while (1) {
+        // Check whose turn it is and prompt accordingly
         if (isHumanPlayerTurn) {
             printf("%s, choose a spell: ", player1Name);
-            scanf("%s", currentSpell); // Scan chosen spell from the human player
+            scanf("%s", currentSpell); // Scan the chosen spell from the player
         } else {
+            // Bot's turn: Choose a spell
             strcpy(currentSpell, chooseSmartBotSpell(spells, numofspells, lastSpell));
             printf("Bot chooses: %s\n", currentSpell);
         }
 
-        // Check if the spell is valid, if valid, we don't enter the for loop
-        if (strlen(lastSpell) > 0 && !isValidSpell(currentSpell, lastSpell)) {
-            printf("Invalid spell! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
-            break; // Exit the loop if the spell is invalid
-        }
+        int validSpell = 0; 
 
-        // Check if the spell has already been used
-        int validSpell = 0; // Initially assume it is not valid until proven otherwise
-        for (int i = 0; i < numofspells; i++) { // Check if the chosen spell is valid and present in the list of available spells
+        // is the chosen spell valid and present in the list of available spells
+        for (int i = 0; i < numofspells; i++) {
             if (strcmp(spells[i], currentSpell) == 0) {
                 validSpell = 1;
                 strcpy(spells[i], ""); // Remove the spell from the list
@@ -115,19 +141,19 @@ int main() {
             }
         }
 
-        // Check if the spell is valid and not a repetition
+        // Check if spell is invalid and exit loop
         if (!validSpell) {
+            printf("Invalid spell! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
+            break;
+        } else if (strlen(lastSpell) > 0 && !isValidSpell(currentSpell, lastSpell)) {
+            // Check if the spell is a repetition and exit loop
             printf("Repetition! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
-            break; // Exit the loop in case of repetition
+            break;
         }
 
-        // Set the last spell
-        strcpy(lastSpell, currentSpell); // Update the last spell to the current one just used.
-
-        // Switch players
+        strcpy(lastSpell, currentSpell); // Update the last spell to the current one just used
         isHumanPlayerTurn = !isHumanPlayerTurn; // Toggle between human and bot
     }
 
     return 0;
 }
-
