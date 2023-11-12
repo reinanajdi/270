@@ -119,7 +119,10 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
         }
     }
 }
-
+// Function to perform a coin toss and return 1 for heads and 0 for tails
+int coinToss() {
+    return rand() % 2;
+}
 int main() {   
     int difficulty;
     char spells[100][100]; // Array to store spells
@@ -147,17 +150,21 @@ int main() {
     scanf("%s", player1Name);
     printf("Enter the desired difficuly level (0 = Easy, 1 = Medium, 2 = Hard): ");
     scanf("%d", &difficulty); // Scanner to get the desired difficulty level
-    while (difficulty != 0 && difficulty != 1 && difficulty != 2) {
-        printf("You must pick a number between 0, 1, and 2: ");
-        scanf("%d", &difficulty); 
-    }
+
     char currentSpell[100]; // Current spell chosen
     char lastSpell[100] = ""; // Last spell casted; initialize as an empty string because at the beginning of the game, no spell has been cast yet
 
     srand(time(NULL)); // Seed the random number generator with the current time
 
     int isHumanPlayerTurn = 1; // 1 for human, 0 for bot; Initialize as human player's turn
-
+    int coinResult = coinToss();
+     if (coinResult == 1) {
+        printf("Heads! %s goes first.\n", player1Name);
+        isHumanPlayerTurn = 1; // Human player goes first (heads)
+    } else {
+        printf("Tails! Bot goes first.\n");
+        isHumanPlayerTurn = 0; // Bot goes first (tails)
+    }
     // Continuous loop for the game
     while (1) {
         // Check whose turn it is and prompt accordingly
