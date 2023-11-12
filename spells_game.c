@@ -120,7 +120,8 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
     }
 }
 
-int main() {   int difficulty;
+int main() {   
+    int difficulty;
     char spells[100][100]; // Array to store spells
     int numofspells;       // Number of spells
     FILE* spellsp;          // File pointer to interact with the given file
@@ -144,9 +145,8 @@ int main() {   int difficulty;
     char player2Name[20] = "Bot"; // Player 2 name (bot player)
     printf("Enter your name: ");
     scanf("%s", player1Name);
-    int difficulty = 1;
     printf("Enter the desired difficuly level (0 = Easy, 1 = Medium, 2 = Hard): ");
-    scanf("%d", difficulty); // Scanner to get the desired difficulty level
+    scanf("%d", &difficulty); // Scanner to get the desired difficulty level
 
     char currentSpell[100]; // Current spell chosen
     char lastSpell[100] = ""; // Last spell casted; initialize as an empty string because at the beginning of the game, no spell has been cast yet
