@@ -144,6 +144,7 @@ int main() {   int difficulty;
     char player2Name[20] = "Bot"; // Player 2 name (bot player)
     printf("Enter your name: ");
     scanf("%s", player1Name);
+    int difficulty = 1;
     printf("Enter the desired difficuly level (0 = Easy, 1 = Medium, 2 = Hard): ");
     scanf("%d", difficulty); // Scanner to get the desired difficulty level
 
