@@ -4,6 +4,7 @@
 #include <time.h>
 
 // Function to check if the chosen spell is valid
+
 int isValidSpell(char *spell, char *lastSpell) {
     if (strlen(lastSpell) > 0 && tolower(spell[0]) != tolower(lastSpell[strlen(lastSpell) - 1])) {
         return 0; // Invalid spell
@@ -21,7 +22,6 @@ int isRepetition(char *spell, char spells[][100], int numofspells) {
     }
     return 0; // Not a repetition
 }
-
 
 // Function to check if the chosen spell is in the list of valid spells
 int isSpellInList(char *spell, char spells[][100], int numofspells) {
@@ -93,6 +93,7 @@ char *chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
             // Choose a word that leads to a dead end or randomly starts with the last character of human input
             int randomIndex = rand() % numValidOptions;
             strcpy(chosenSpell, spells[validOptions[randomIndex]]);
+
         }
     }
 
@@ -106,6 +107,12 @@ char *chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
 
     return chosenSpell;
 }
+
+// Function to simulate a coin toss (heads or tails)
+int coinToss() {
+    return rand() % 2; // Returns 0 for heads (player goes first) or 1 for tails (bot goes first)
+}
+
 
 int main() {
     int difficulty;
@@ -146,12 +153,21 @@ int main() {
         }
     }
 
+
     char currentSpell[100];
     char lastSpell[100] = "";
+    srand(time(NULL)); // Seed the random number generator with the current time
 
-    srand(time(NULL));
+    int isHumanPlayerTurn = 1; // 1 for human, 0 for bot; Initialize as human player's turn
+    int coinResult = coinToss();
 
-    int isHumanPlayerTurn = 0;
+    if (coinResult == 1) {
+        printf("Heads! %s goes first.\n", player1Name);
+        isHumanPlayerTurn = 1; // Human player goes first (heads)
+    } else {
+        printf("Tails! Bot goes first.\n");
+        isHumanPlayerTurn = 0; // Bot goes first (tails)
+    }
 
 
     while (1) {
