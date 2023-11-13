@@ -3,12 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-/* IsValidSpell checks if the chosen spell is valid according to the two parameters,
-    spell represents the string chosen and last spell is the string representing the last spell casted.
-    The function compares the first character of the current spell (spell[0]) to the last character of the last spell (lastSpell[strlen(lastSpell) - 1])
-    If they match (invalid spell), it returns 1 else it returns 0
-*/
-int isValidSpell(char* spell, char* lastSpell) {
+// Function to check if the chosen spell is valid
+int isValidSpell(char *spell, char *lastSpell) {
     if (spell[0] != lastSpell[strlen(lastSpell) - 1]) {
         return 0; // Invalid spell
     }
@@ -16,94 +12,60 @@ int isValidSpell(char* spell, char* lastSpell) {
 }
 
 // Function to check if the chosen spell is a repetition
-int isRepetition(char* spell, char spells[][100], int numofspells) {
+int isRepetition(char *spell, char spells[][100], int numofspells) {
     for (int i = 0; i < numofspells; i++) {
-        if (strcmp(spells[i], spell) == 0) {
+        if (strlen(spells[i]) > 0 && strcmp(spells[i], spell) == 0) {
             return 1; // Repetition
         }
     }
-    return 0;
+    return 0; // Not a repetition
 }
 
-// Function to check the validity of the spell (Invalid, Repetition, or Valid)
-int checkSpellValidity(char* spell, char* lastSpell, char spells[][100], int numofspells) {
-    if (strlen(lastSpell) > 0 && !isValidSpell(spell, lastSpell)) {
-        return 0; // Invalid spell
-    } else if (isRepetition(spell, spells, numofspells)) {
-        return 1; // Repetition
-    } else {
-        return 2; // Valid spell
-    }
-}
-
-// Function for the bot player to choose a spell using a smarter strategy
-char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[100], int difficulty) {
-
-     if (difficulty == 0) { // runs if player chose the easiest difficulty level, simply chooses the next available valid spell.
-            // Loop through each spell in the list
-        for (int i = 0; i < numofspells; i++) {
-            // Check if the spell is valid and can be used after the last spell
-            if (strlen(spells[i]) > 0 && isValidSpell(spells[i], lastSpell)) {
-                // Return the first valid spell found
-                return spells[i];
-            }
-        }
-        // If no valid spell is found, return an empty string
-        return "";
-    } 
-    
-    char* bestSpell = NULL;
-    int bestScore = 0;
-
-    // Loop through each spell to find the optimal spell for the bot
+// Function to check if the chosen spell is in the list of valid spells
+int isSpellInList(char *spell, char spells[][100], int numofspells) {
     for (int i = 0; i < numofspells; i++) {
-        if (strlen(spells[i]) > 0 && isValidSpell(spells[i], lastSpell)) {
-            int score = 1;
-            char tempLastSpell[100];
-            strcpy(tempLastSpell, lastSpell);
-            strcat(tempLastSpell, spells[i]);
+        if (strlen(spells[i]) > 0 && strcmp(spells[i], spell) == 0) {
+            return 1; // Spell is in the list
+        }
+    }
+    return 0; // Spell is not in the list
+}
 
-            // Loop through each spell to calculate the score
-            for (int j = 0; j < numofspells; j++) {
-                if (strcmp(spells[j], tempLastSpell) == 0) {
-                    score++;
-                }
-            }
+// Function to check if choosing a specific spell leads to a dead end
+int leadsToDeadEnd(char spells[][100], int numofspells, int spellIndex, char chosenSpells[][100], int currentChosenSpell) {
+    char lastLetter = spells[spellIndex][strlen(spells[spellIndex]) - 1];
 
-            if (difficulty == 2) { /* runs if the player chooses hard difficulty
-                                      which allows the bot to adopt a more aggressive strategy
-                                    * it works by prioritizing spells whose last letters 
-                                      rarely occur as first letters, forcing the player to choose from
-                                      a smaller list of spells. */
-                
-                char lastLetter = spells[i][strlen(spells[i] - 1)]; 
-                int lastAsFirstCount = 0;
-                for (int k = 0; k < numofspells; k++) {
-                    if (lastLetter == spells[k][0]) {
-                        lastAsFirstCount++;
-                    } 
-                } score += numofspells - lastAsFirstCount;
-
-            }
-
-            // Update the best spell if the current spell has a higher score
-            if (score > bestScore) {
-                bestScore = score;
-                bestSpell = spells[i];
-            }
+    for (int i = 0; i < numofspells; i++) {
+        if (strlen(spells[i]) > 0 && spells[i][0] == lastLetter && !isRepetition(spells[i], chosenSpells, currentChosenSpell + 1)) {
+            return 0; // There is a valid option, does not lead to a dead end
         }
     }
 
-    // If no optimal spell is found, choose randomly
-    if (bestSpell != NULL) {
-        return bestSpell;
-    } else {
+    return 1; // Leads to a dead end
+}
+
+// Function to choose a spell for the bot based on the difficulty level
+// Function to choose a spell for the bot based on the difficulty level
+// Function to choose a spell for the bot based on the difficulty level
+char *chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[100], int difficulty, char chosenSpells[][100], int currentChosenSpell) {
+    char *chosenSpell = malloc(100 * sizeof(char)); // Dynamic memory allocation
+
+    if (difficulty == 0) {
+        // Easy: Choose the first word that matches the last character
+        for (int i = 0; i < numofspells; i++) {
+            if (strlen(spells[i]) > 0 && isValidSpell(spells[i], lastSpell) && !isRepetition(spells[i], chosenSpells, currentChosenSpell + 1)) {
+                strcpy(chosenSpell, spells[i]);
+                break;
+            }
+        }
+    } else if (difficulty == 1) {
+        // Medium: Randomly choose a word that starts with the last character of human input
+        char lastLetter = lastSpell[strlen(lastSpell) - 1];
         int validOptions[100];
         int numValidOptions = 0;
 
-        // Loop through each spell to find valid options for the bot's random choice
         for (int i = 0; i < numofspells; i++) {
-            if (strlen(spells[i]) > 0 && isValidSpell(spells[i], lastSpell)) {
+            if (strlen(spells[i]) > 0 && spells[i][0] == lastLetter && !isRepetition(spells[i], chosenSpells, currentChosenSpell + 1)) {
                 validOptions[numValidOptions++] = i;
             }
         }
@@ -111,83 +73,115 @@ char* chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
         if (numValidOptions > 0) {
             // Choose a random spell from the valid options
             int randomIndex = rand() % numValidOptions;
-            return spells[validOptions[randomIndex]];
-        } else {
-            // No valid spell found; this should not happen in most cases
-            // Return an empty string as a fallback
-            return "";
+            strcpy(chosenSpell, spells[validOptions[randomIndex]]);
+        }
+    } else if (difficulty == 2) {
+        // Hard: Choose words that lead to a dead end, or randomly choose a word that starts with the last character of human input
+        char lastLetter = lastSpell[strlen(lastSpell) - 1];
+        int validOptions[100];
+        int numValidOptions = 0;
+
+        for (int i = 0; i < numofspells; i++) {
+            if (strlen(spells[i]) > 0 && !isRepetition(spells[i], chosenSpells, currentChosenSpell + 1)) {
+                if (spells[i][0] == lastLetter || (spells[i][0] != lastLetter && leadsToDeadEnd(spells, numofspells, i, chosenSpells, currentChosenSpell + 1))) {
+                    validOptions[numValidOptions++] = i;
+                }
+            }
+        }
+
+        if (numValidOptions > 0) {
+            // Choose a word that leads to a dead end or randomly starts with the last character of human input
+            int randomIndex = rand() % numValidOptions;
+            strcpy(chosenSpell, spells[validOptions[randomIndex]]);
         }
     }
+
+    // Remove the chosen spell from the list of available spells
+    for (int i = 0; i < numofspells; i++) {
+        if (strcmp(spells[i], chosenSpell) == 0) {
+            spells[i][0] = '\0'; // Empty the spell to mark it as chosen
+            break;
+        }
+    }
+
+    return chosenSpell;
 }
 
-int main() {   int difficulty;
-    char spells[100][100]; // Array to store spells
-    int numofspells;       // Number of spells
-    FILE* spellsp;          // File pointer to interact with the given file
-    spellsp = fopen("spells.txt", "r"); // Open the file containing spells
+int main() {
+    int difficulty;
+    char spells[100][100];
+    char chosenSpells[100][100];
+    int currentChosenSpell = 0;
+    int numofspells;
+    FILE *spellsp;
+    spellsp = fopen("spells.txt", "r");
 
-    // Check if the file was opened successfully
     if (spellsp == NULL) {
         perror("File was not opened ");
-        return 1; // Return 1 to indicate an error in opening the file
+        return 1;
     }
 
-    // Read the number of spells from the file
     fscanf(spellsp, "%d", &numofspells);
 
-    // Loop to read each spell from the file and store it in the array
     for (int i = 0; i < numofspells; i++) {
-        fscanf(spellsp, "%s", spells[i]); // Read each spell from file and store in an array
+        fscanf(spellsp, "%s", spells[i]);
     }
 
-  char player1Name[20]; // Player 1 name (human player)
-    char player2Name[20] = "Bot"; // Player 2 name (bot player)
+    char player1Name[20];
+    char player2Name[20] = "Bot";
     printf("Enter your name: ");
     scanf("%s", player1Name);
-    printf("Enter the desired difficuly level (0 = Easy, 1 = Medium, 2 = Hard): ");
-    scanf("%d", difficulty); // Scanner to get the desired difficulty level
 
-    char currentSpell[100]; // Current spell chosen
-    char lastSpell[100] = ""; // Last spell casted; initialize as an empty string because at the beginning of the game, no spell has been cast yet
-
-    srand(time(NULL)); // Seed the random number generator with the current time
-
-    int isHumanPlayerTurn = 1; // 1 for human, 0 for bot; Initialize as human player's turn
-
-    // Continuous loop for the game
+    // Prompt the user until a valid difficulty level is entered
     while (1) {
-        // Check whose turn it is and prompt accordingly
+        printf("Enter the desired difficulty level (0 = Easy, 1 = Medium, 2 = Hard): ");
+        int result = scanf("%d", &difficulty);
+        if (result == 1 && difficulty >= 0 && difficulty <= 2) {
+            break; // Exit the loop if a valid difficulty level is entered
+        } else {
+            // Clear the input buffer to handle invalid input
+            while (getchar() != '\n')
+                ;
+            printf("Invalid input. Please enter a valid difficulty level.\n");
+        }
+    }
+
+    char currentSpell[100];
+    char lastSpell[100] = "";
+
+    srand(time(NULL));
+
+    int isHumanPlayerTurn = 0;
+    printf("%s, choose a spell: ", player1Name);
+    scanf("%s", lastSpell);
+
+    while (1) {
         if (isHumanPlayerTurn) {
             printf("%s, choose a spell: ", player1Name);
-            scanf("%s", currentSpell); // Scan the chosen spell from the player
+            scanf("%s", currentSpell);
+
+            // Check if the player's spell is in the list
+            if (!isSpellInList(currentSpell, spells, numofspells)) {
+                printf("Invalid spell! %s loses.\n", player1Name);
+                break;
+            }
         } else {
-            // Bot's turn: Choose a spell
-            strcpy(currentSpell, chooseSmartBotSpell(spells, numofspells, lastSpell, difficulty));
+            strcpy(currentSpell, chooseSmartBotSpell(spells, numofspells, lastSpell, difficulty, chosenSpells, currentChosenSpell));
             printf("Bot chooses: %s\n", currentSpell);
         }
 
-        int validSpell = 0; 
-
-        // is the chosen spell valid and present in the list of available spells
-        for (int i = 0; i < numofspells; i++) {
-            if (strcmp(spells[i], currentSpell) == 0) {
-                validSpell = 1;
-                strcpy(spells[i], ""); // Remove the spell from the list
-                break;
-            }
-        }
-    // Check if spell is invalid and exit loop
-        if (!validSpell) {
+        if (!isValidSpell(currentSpell, lastSpell)) {
             printf("Invalid spell! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
             break;
-        } else if (strlen(lastSpell) > 0 && !isValidSpell(currentSpell, lastSpell)) {
-            // Check if the spell is a repetition and exit loop
+        } else if (isRepetition(currentSpell, chosenSpells, currentChosenSpell + 1)) {
             printf("Repetition! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
             break;
         }
 
-        strcpy(lastSpell, currentSpell); // Update the last spell to the current one just used
-        isHumanPlayerTurn = !isHumanPlayerTurn; // Toggle between human and bot
+        strcpy(chosenSpells[currentChosenSpell], currentSpell);
+        currentChosenSpell++;
+        strcpy(lastSpell, currentSpell);
+        isHumanPlayerTurn = !isHumanPlayerTurn;
     }
 
     return 0;
