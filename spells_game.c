@@ -4,12 +4,14 @@
 #include <time.h>
 
 // Function to check if the chosen spell is valid
+
 int isValidSpell(char *spell, char *lastSpell) {
     if (strlen(lastSpell) > 0 && tolower(spell[0]) != tolower(lastSpell[strlen(lastSpell) - 1])) {
         return 0; // Invalid spell
     }
     return 1; // Valid spell
 }
+
 
 // Function to check if the chosen spell is a repetition
 int isRepetition(char *spell, char spells[][100], int numofspells) {
@@ -91,6 +93,7 @@ char *chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
             // Choose a word that leads to a dead end or randomly starts with the last character of human input
             int randomIndex = rand() % numValidOptions;
             strcpy(chosenSpell, spells[validOptions[randomIndex]]);
+
         }
     }
 
@@ -109,6 +112,7 @@ char *chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[10
 int coinToss() {
     return rand() % 2; // Returns 0 for heads (player goes first) or 1 for tails (bot goes first)
 }
+
 
 int main() {
     int difficulty;
@@ -149,6 +153,7 @@ int main() {
         }
     }
 
+
     char currentSpell[100];
     char lastSpell[100] = "";
     srand(time(NULL)); // Seed the random number generator with the current time
@@ -163,6 +168,7 @@ int main() {
         printf("Tails! Bot goes first.\n");
         isHumanPlayerTurn = 0; // Bot goes first (tails)
     }
+
 
     while (1) {
         if (isHumanPlayerTurn) {
