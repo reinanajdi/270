@@ -156,42 +156,7 @@ int main() {
     srand(time(NULL));
 
     int isHumanPlayerTurn = 0;
-   while (1) {
-    if (isHumanPlayerTurn) {
-        printf("%s, choose a spell: ", player1Name);
-        scanf("%s", currentSpell);
 
-        // Check if the chosen spell is in the list
-        int spellInList = 0;
-        for (int i = 0; i < numofspells; i++) {
-            if (strlen(spells[i]) > 0 && strcmp(spells[i], currentSpell) == 0) {
-                spellInList = 1;
-                break;
-            }
-        }
-
-        if (!spellInList) {
-            printf("Invalid spell! %s loses.\n", player1Name);
-            break;
-        }
-    } else {
-        strcpy(currentSpell, chooseSmartBotSpell(spells, numofspells, lastSpell, difficulty, chosenSpells, currentChosenSpell));
-        printf("Bot chooses: %s\n", currentSpell);
-    }
-
-    if (!isValidSpell(currentSpell, lastSpell)) {
-        printf("Invalid spell! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
-        break;
-    } else if (isRepetition(currentSpell, chosenSpells, currentChosenSpell + 1)) {
-        printf("Repetition! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
-        break;
-    }
-
-    strcpy(chosenSpells[currentChosenSpell], currentSpell);
-    currentChosenSpell++;
-    strcpy(lastSpell, currentSpell);
-    isHumanPlayerTurn = !isHumanPlayerTurn;
-}
 
     while (1) {
         if (isHumanPlayerTurn) {
