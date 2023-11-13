@@ -4,8 +4,6 @@
 #include <time.h>
 
 // Function to check if the chosen spell is valid
-// Function to check if the chosen spell is valid
-// Function to check if the chosen spell is valid
 int isValidSpell(char *spell, char *lastSpell) {
     if (strlen(lastSpell) > 0 && tolower(spell[0]) != tolower(lastSpell[strlen(lastSpell) - 1])) {
         return 0; // Invalid spell
@@ -48,8 +46,6 @@ int leadsToDeadEnd(char spells[][100], int numofspells, int spellIndex, char cho
     return 1; // Leads to a dead end
 }
 
-// Function to choose a spell for the bot based on the difficulty level
-// Function to choose a spell for the bot based on the difficulty level
 // Function to choose a spell for the bot based on the difficulty level
 char *chooseSmartBotSpell(char spells[][100], int numofspells, char lastSpell[100], int difficulty, char chosenSpells[][100], int currentChosenSpell) {
     char *chosenSpell = malloc(100 * sizeof(char)); // Dynamic memory allocation
