@@ -4,22 +4,26 @@
 #include <time.h>
 
 // Function to check if the chosen spell is valid
+// Function to check if the chosen spell is valid
+// Function to check if the chosen spell is valid
 int isValidSpell(char *spell, char *lastSpell) {
-    if (spell[0] != lastSpell[strlen(lastSpell) - 1]) {
+    if (strlen(lastSpell) > 0 && tolower(spell[0]) != tolower(lastSpell[strlen(lastSpell) - 1])) {
         return 0; // Invalid spell
     }
     return 1; // Valid spell
 }
 
+
 // Function to check if the chosen spell is a repetition
 int isRepetition(char *spell, char spells[][100], int numofspells) {
     for (int i = 0; i < numofspells; i++) {
-        if (strlen(spells[i]) > 0 && strcmp(spells[i], spell) == 0) {
+        if (strlen(spells[i]) > 0 && strcasecmp(spells[i], spell) == 0) {
             return 1; // Repetition
         }
     }
     return 0; // Not a repetition
 }
+
 
 // Function to check if the chosen spell is in the list of valid spells
 int isSpellInList(char *spell, char spells[][100], int numofspells) {
@@ -152,8 +156,42 @@ int main() {
     srand(time(NULL));
 
     int isHumanPlayerTurn = 0;
-    printf("%s, choose a spell: ", player1Name);
-    scanf("%s", lastSpell);
+   while (1) {
+    if (isHumanPlayerTurn) {
+        printf("%s, choose a spell: ", player1Name);
+        scanf("%s", currentSpell);
+
+        // Check if the chosen spell is in the list
+        int spellInList = 0;
+        for (int i = 0; i < numofspells; i++) {
+            if (strlen(spells[i]) > 0 && strcmp(spells[i], currentSpell) == 0) {
+                spellInList = 1;
+                break;
+            }
+        }
+
+        if (!spellInList) {
+            printf("Invalid spell! %s loses.\n", player1Name);
+            break;
+        }
+    } else {
+        strcpy(currentSpell, chooseSmartBotSpell(spells, numofspells, lastSpell, difficulty, chosenSpells, currentChosenSpell));
+        printf("Bot chooses: %s\n", currentSpell);
+    }
+
+    if (!isValidSpell(currentSpell, lastSpell)) {
+        printf("Invalid spell! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
+        break;
+    } else if (isRepetition(currentSpell, chosenSpells, currentChosenSpell + 1)) {
+        printf("Repetition! %s wins.\n", isHumanPlayerTurn ? player2Name : player1Name);
+        break;
+    }
+
+    strcpy(chosenSpells[currentChosenSpell], currentSpell);
+    currentChosenSpell++;
+    strcpy(lastSpell, currentSpell);
+    isHumanPlayerTurn = !isHumanPlayerTurn;
+}
 
     while (1) {
         if (isHumanPlayerTurn) {
