@@ -10,14 +10,15 @@ int isValidSpell(char *spell, char *lastSpell) {
     return 1; // Valid spell
 }
 
-int isRepetition(char *spell, char spells[][100], int numofspells) {
-    for (int i = 0; i < numofspells; i++) {
-        if (strcmp(spells[i], spell) == 0) {
+int isRepetition(char* spell, char chosenSpells[][100], int currentChosenSpell) {
+    for (int i = 0; i < currentChosenSpell; i++) {
+        if (strcmp(chosenSpells[i], spell) == 0) {
             return 1; // Repetition
         }
     }
     return 0;
 }
+
 
 int checkSpellValidity(char *spell, char *lastSpell, char spells[][100], int numofspells) {
     if (strlen(lastSpell) > 0 && !isValidSpell(spell, lastSpell)) {
